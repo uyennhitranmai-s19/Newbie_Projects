@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .todo-container {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-family: 'Pacifico', cursive;
+      font-size: 26px;
+    }
+    .input-section {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 14px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    button {
+      padding: 10px 15px;
+      background: #ff7b54;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 18px;
+    }
+    button:hover {
+      background: #ff5722;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.2s;
+      font-size: 16px;
+    }
+    li:hover {
+      transform: translateX(5px);
+    }
+    .delete-btn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      
+    }
+  </style>
+</head>
+<body>
+  <div class="todo-container">
+    <h2>✨ To-Do List ✨</h2>
+    <div class="input-section">
+      <input type="text" id="taskInput" placeholder="Enter a task...">
+      <button onclick="addTask()">+</button>
+    </div>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const taskText = input.value.trim();
+      if (taskText === '') return;
+      
+      const li = document.createElement('li');
+      li.innerHTML = `${taskText} <button class="delete-btn" onclick="removeTask(this)">×</button>`;
+      
+      document.getElementById('taskList').appendChild(li);
+      input.value = '';
+    }
+
+    function removeTask(button) {
+      button.parentElement.remove();
+    }
+
+    // Thêm chức năng Enter
+    document.getElementById('taskInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addTask();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synchronized Multi-User Calendar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .user-selector select {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            color: #333;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .sidebar h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .user-item {
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .calendar-section {
+            padding: 30px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .calendar-nav button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .current-month {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 700;
+            color: #667eea;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .day-cell {
+            min-height: 100px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .day-cell:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .day-cell.other-month {
+            background: #f8f9fa;
+            opacity: 0.5;
+        }
+
+        .day-cell.today {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        }
+
+        .day-number {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-dot {
+            width: 100%;
+            padding: 3px 6px;
+            margin-top: 3px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .event-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-left: 1px solid #e0e0e0;
+            overflow-y: auto;
+        }
+
+        .event-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .add-event-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .add-event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .event-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-form input, .event-form textarea, .event-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .event-form textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .event-form button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .event-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-item h4 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .event-item p {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .event-item .event-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .event-item button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .delete-event-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .attendee-list {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .attendee-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar, .event-panel {
+                border: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+        }
+
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .sync-status::before {
+            content: "●";
+            font-size: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CoTIME!</h1>
+            <div class="user-selector">
+                <label style="font-weight: 600;">Login as:</label>
+                <select id="currentUser">
+                    <option value="user1">👤 John Smith</option>
+                    <option value="user2">👤 Sarah Johnson</option>
+                    <option value="user3">👤 Michael Brown</option>
+                    <option value="user4">👤 Emily Davis</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Sidebar - User List -->
+            <div class="sidebar">
+                <h3>👥 Show Calendars:</h3>
+                <div class="user-list" id="userList"></div>
+            </div>
+
+            <!-- Main Calendar -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button id="prevMonth">◀ Previous</button>
+                        <span class="current-month" id="currentMonth"></span>
+                        <button id="nextMonth">Next ▶</button>
+                    </div>
+                    <button id="todayBtn" style="padding: 10px 20px; border: none; border-radius: 8px; background: #28a745; color: white; cursor: pointer; font-weight: 600;">Today</button>
+                </div>
+                <div class="calendar-grid" id="calendar"></div>
+            </div>
+
+            <!-- Event Panel -->
+            <div class="event-panel">
+                <h3>Events</h3>
+                <button class="add-event-btn" id="addEventBtn">➕ Create New Meeting</button>
+                <div id="eventForm" class="event-form hidden">
+                    <input type="text" id="eventTitle" placeholder="Meeting Title">
+                    <input type="date" id="eventDate">
+                    <input type="time" id="eventTime" value="09:00">
+                    <textarea id="eventDesc" placeholder="Description"></textarea>
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Invite Attendees:</label>
+                    <div id="attendeesList"></div>
+                    <button class="save-btn" id="saveEventBtn">💾 Save</button>
+                    <button class="cancel-btn" id="cancelEventBtn">❌ Cancel</button>
+                </div>
+                <div id="eventList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sync-status">
+        Synchronizing
+    </div>
+
+    <script>
+        // User data
+        const users = {
+            user1: { name: 'John Smith', color: '#667eea' },
+            user2: { name: 'Sarah Johnson', color: '#f093fb' },
+            user3: { name: 'Michael Brown', color: '#4facfe' },
+            user4: { name: 'Emily Davis', color: '#43e97b' }
+        };
+
+        // Application state - trạng thái
+        let currentUser = 'user1';
+        let currentDate = new Date();
+        let selectedDate = null;
+        let visibleUsers = ['user1', 'user2', 'user3', 'user4'];
+        
+        // Event data (mô phỏng database)
+        let events = [
+            {
+                id: 1,
+                title: 'Project Team Meeting',
+                date: new Date(2025, 9, 15),
+                time: '09:00',
+                description: 'Discuss Q4 project progress',
+                owner: 'user1',
+                attendees: ['user1', 'user2', 'user3']
+            },
+            {
+                id: 2,
+                title: 'Code Review Session',
+                date: new Date(2025, 9, 20),
+                time: '14:00',
+                description: 'Review new module code',
+                owner: 'user2',
+                attendees: ['user2', 'user3']
+            },
+            {
+                id: 3,
+                title: 'Internal Training',
+                date: new Date(2025, 9, 25),
+                time: '10:00',
+                description: 'New technology training',
+                owner: 'user3',
+                attendees: ['user1', 'user2', 'user3', 'user4']
+            }
+        ];
+
+        // Initialize - khởi tạo
+        document.addEventListener('DOMContentLoaded', () => {
+            initUserList();
+            initAttendeesList();
+            renderCalendar();
+            renderEventList();
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('currentUser').addEventListener('change', (e) => {
+                currentUser = e.target.value;
+                renderCalendar();
+                renderEventList();
+            });
+
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                currentDate = new Date();
+                renderCalendar();
+            });
+
+            document.getElementById('addEventBtn').addEventListener('click', () => {
+                document.getElementById('eventForm').classList.remove('hidden');
+                document.getElementById('eventDate').valueAsDate = new Date();
+            });
+
+            document.getElementById('cancelEventBtn').addEventListener('click', () => {
+                document.getElementById('eventForm').classList.add('hidden');
+                clearEventForm();
+            });
+
+            document.getElementById('saveEventBtn').addEventListener('click', saveEvent);
+        }
+
+        // Initialize user list
+        function initUserList() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+
+            Object.keys(users).forEach(userId => {
+                const user = users[userId];
+                const div = document.createElement('div');
+                div.className = 'user-item';
+                div.style.borderLeftColor = user.color;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = visibleUsers.includes(userId);
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        visibleUsers.push(userId);
+                    } else {
+                        visibleUsers = visibleUsers.filter(id => id !== userId);
+                    }
+                    renderCalendar();
+                    renderEventList();
+                });
+
+                div.appendChild(checkbox);
+                div.appendChild(document.createTextNode(user.name));
+                userList.appendChild(div);
+            });
+        }
+
+        // Initialize attendees list
+        function initAttendeesList() {
+            const container = document.getElementById('attendeesList');
+            container.innerHTML = '';
+
+            Object.keys(users).forEach(userId => {
+                const user = users[userId];
+                const div = document.createElement('div');
+                div.className = 'attendee-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = userId;
+                checkbox.id = `attendee_${userId}`;
+                checkbox.checked = userId === currentUser;
+                if (userId === currentUser) checkbox.disabled = true;
+
+                const label = document.createElement('label');
+                label.htmlFor = `attendee_${userId}`;
+                label.textContent = user.name;
+                label.style.cursor = 'pointer';
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        }
+
+        // Render lịch
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            const monthLabel = document.getElementById('currentMonth');
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            monthLabel.textContent = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const prevLastDay = new Date(year, month, 0);
+
+            const firstDayWeek = firstDay.getDay();
+            const lastDate = lastDay.getDate();
+            const prevLastDate = prevLastDay.getDate();
+
+            calendar.innerHTML = '';
+
+            // Headers
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const div = document.createElement('div');
+                div.className = 'day-header';
+                div.textContent = day;
+                calendar.appendChild(div);
+            });
+
+            // Previous month days
+            for (let i = firstDayWeek - 1; i >= 0; i--) {
+                const div = createDayCell(
+                    new Date(year, month - 1, prevLastDate - i),
+                    true
+                );
+                calendar.appendChild(div);
+            }
+
+            // Current month days
+            for (let i = 1; i <= lastDate; i++) {
+                const date = new Date(year, month, i);
+                const div = createDayCell(date, false);
+                calendar.appendChild(div);
+            }
+
+            // Next month days
+            const remainingCells = 42 - calendar.children.length + 7;
+            for (let i = 1; i <= remainingCells; i++) {
+                const div = createDayCell(
+                    new Date(year, month + 1, i),
+                    true
+                );
+                calendar.appendChild(div);
+            }
+        }
+
+        // Create day cell - ô ngày
+        function createDayCell(date, isOtherMonth) {
+            const div = document.createElement('div');
+            div.className = 'day-cell';
+            
+            if (isOtherMonth) {
+                div.classList.add('other-month');
+            }
+
+            const today = new Date();
+            if (date.toDateString() === today.toDateString()) {
+                div.classList.add('today');
+            }
+
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+            dayNumber.textContent = date.getDate();
+            div.appendChild(dayNumber);
+
+            // Add events
+            const dayEvents = getEventsForDate(date);
+            dayEvents.forEach(event => {
+                if (visibleUsers.includes(event.owner) || 
+                    event.attendees.some(a => visibleUsers.includes(a))) {
+                    const eventDot = document.createElement('div');
+                    eventDot.className = 'event-dot';
+                    eventDot.style.background = users[event.owner].color;
+                    eventDot.textContent = event.title;
+                    eventDot.title = `${event.time} - ${event.title}`;
+                    div.appendChild(eventDot);
+                }
+            });
+
+            div.addEventListener('click', () => {
+                selectedDate = date;
+                document.getElementById('eventDate').valueAsDate = date;
+                renderEventList();
+            });
+
+            return div;
+        }
+
+        // Get events for date
+        function getEventsForDate(date) {
+            return events.filter(event => 
+                event.date.toDateString() === date.toDateString()
+            );
+        }
+
+        // Render event list
+        function renderEventList() {
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = '';
+
+            let filteredEvents = events;
+
+            if (selectedDate) {
+                filteredEvents = getEventsForDate(selectedDate);
+            }
+
+            filteredEvents = filteredEvents.filter(event =>
+                visibleUsers.includes(event.owner) ||
+                event.attendees.some(a => visibleUsers.includes(a))
+            );
+
+            if (filteredEvents.length === 0) {
+                eventList.innerHTML = '<p style="text-align: center; color: #999;">No events</p>';
+                return;
+            }
+
+            filteredEvents.sort((a, b) => a.date - b.date);
+
+            filteredEvents.forEach(event => {
+                const div = document.createElement('div');
+                div.className = 'event-item';
+                div.style.borderLeftColor = users[event.owner].color;
+
+                const title = document.createElement('h4');
+                title.textContent = event.title;
+
+                const date = document.createElement('p');
+                date.textContent = `📅 ${event.date.toLocaleDateString('en-US')} ⏰ ${event.time}`;
+
+                const owner = document.createElement('p');
+                owner.textContent = `👤 Organizer: ${users[event.owner].name}`;
+
+                const attendees = document.createElement('p');
+                attendees.textContent = `👥 Attendees: ${event.attendees.map(id => users[id].name).join(', ')}`;
+
+                const desc = document.createElement('p');
+                desc.textContent = event.description;
+
+                div.appendChild(title);
+                div.appendChild(date);
+                div.appendChild(owner);
+                div.appendChild(attendees);
+                div.appendChild(desc);
+
+                if (event.owner === currentUser) {
+                    const actions = document.createElement('div');
+                    actions.className = 'event-actions';
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-event-btn';
+                    deleteBtn.textContent = '🗑️ Delete';
+                    deleteBtn.addEventListener('click', () => deleteEvent(event.id));
+
+                    actions.appendChild(deleteBtn);
+                    div.appendChild(actions);
+                }
+
+                eventList.appendChild(div);
+            });
+        }
+
+        // Lưu event
+        function saveEvent() {
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').valueAsDate;
+            const time = document.getElementById('eventTime').value;
+            const description = document.getElementById('eventDesc').value;
+
+            if (!title || !date) {
+                alert('Please enter title and date!');
+                return;
+            }
+
+            const attendees = [currentUser];
+            document.querySelectorAll('#attendeesList input[type="checkbox"]:checked').forEach(cb => {
+                if (cb.value !== currentUser) {
+                    attendees.push(cb.value);
+                }
+            });
+
+            const newEvent = {
+                id: Date.now(),
+                title,
+                date,
+                time,
+                description,
+                owner: currentUser,
+                attendees
+            };
+
+            events.push(newEvent);
+            
+            document.getElementById('eventForm').classList.add('hidden');
+            clearEventForm();
+            renderCalendar();
+            renderEventList();
+
+            // Simulate synchronization - mô phỏng đồng bộ
+            console.log('New event synchronized:', newEvent);
+        }
+
+        // Huỷ event
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                events = events.filter(e => e.id !== eventId);
+                renderCalendar();
+                renderEventList();
+            }
+        }
+
+        // Xoá form
+        function clearEventForm() {
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDesc').value = '';
+            document.getElementById('eventTime').value = '09:00';
+            
+            document.querySelectorAll('#attendeesList input[type="checkbox"]').forEach(cb => {
+                cb.checked = cb.value === currentUser;
+            });
+        }
+    </script>
+</body>
+</html>
