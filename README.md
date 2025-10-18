@@ -25,7 +25,7 @@ For now, they’re just small milestones that remind me where I started.
 
 ## About me
 
-I’m Uyên Nhi, an IT student who loves learning by building small things.  
+I’m Nhi, an IT student who loves learning by building small things.  
 I don’t aim for perfection right now, just progress.  
 Every mini project here is a step forward.
 
