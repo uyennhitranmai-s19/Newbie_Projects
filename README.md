@@ -1,45 +1,31 @@
-# 🌱 Newbie Projects
+# Newbie Projects
 
-Welcome to my small corner of experiments!  
-This repository contains some of my first mini web projects — simple but meaningful steps in my learning journey as an IT student.
+Hi there!  
+This is a small collection of my very first web projects. Nothing fancy, just me trying to figure out how HTML works (and sometimes breaking it along the way).
 
----
+## What’s inside
 
-## 📂 Projects Included
+**Calendar Tool**  
+A basic calendar page. I built this one just to understand how to layout dates and play around with HTML tables.
 
-1. **Calendar Tool**  
-   → A basic HTML page that displays a calendar interface.  
-   (My goal: understand HTML table layout and date formatting.)
+**Drawing Tool**  
+A small web page where you can draw with your mouse. I made it while learning about the `<canvas>` element and JavaScript events.
 
-2. **Drawing Tool**  
-   → A small drawing page using the `<canvas>` element.  
-   (My goal: practice JavaScript event handling and canvas API.)
+**To-do List**  
+A simple to-do list where you can add and remove tasks. This was my first try at DOM manipulation and making a web page actually “do something”.
 
-3. **To-do List**  
-   → A simple to-do list that lets users add and remove tasks.  
-   (My goal: learn how to manipulate DOM elements dynamically.)
+## Why I made these
 
----
+I started these projects when I was learning the basics of front-end development. They might look simple, but each one taught me something new — how to structure HTML, how to use events, and how to debug when nothing works as expected.
 
-## 💡 Purpose
-These projects are beginner-level exercises I built while learning HTML, CSS, and a bit of JavaScript.  
-They may look simple, but each project helped me grasp a new web development concept.
+## What’s next
 
----
+I plan to improve them over time, maybe add some CSS and JavaScript to make them more interactive.  
+For now, they’re just small milestones that remind me where I started.
 
-## 🧭 Next Steps
-- Improve UI with CSS styling 🎨  
-- Add functionality using JavaScript ⚙️  
-- Combine them into a mini productivity web app 💻  
+## About me
 
----
+I’m Uyên Nhi, an IT student who loves learning by building small things.  
+I don’t aim for perfection right now — just progress.  
+Every mini project here is a step forward.
 
-## 🧑‍💻 About Me
-Hi! I’m **Uyên Nhi**, an IT student passionate about learning and building creative tech projects.  
-I believe every line of code — even a messy one — is a step forward. 🌸
-
----
-
-### 📫 Connect with me
-- GitHub: [@uyennhitrannmai-s19](https://github.com/uyennhitrannmai-s19)
-- LinkedIn: *(add when ready)*  
