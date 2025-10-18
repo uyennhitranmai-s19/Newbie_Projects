@@ -1,7 +1,7 @@
 # Newbie Projects
 
 Hi there!  
-This is a small collection of my very first web projects. Nothing fancy, just me trying to figure out how HTML works (and sometimes breaking it along the way).
+This is a small collection of my very first web projects. Nothing fancy, just me trying to figure out how HTML works (and sometimes breaking it along the way) :)
 
 ## What’s inside
 
