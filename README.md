@@ -16,7 +16,7 @@ A simple to-do list where you can add and remove tasks. This was my first try at
 
 ## Why I made these
 
-I started these projects when I was learning the basics of front-end development. They might look simple, but each one taught me something new — how to structure HTML, how to use events, and how to debug when nothing works as expected.
+I started these projects when I was learning the basics of front-end development. They might look simple, but each one taught me something new how to structure HTML, how to use events, and how to debug when nothing works as expected.
 
 ## What’s next
 
@@ -26,6 +26,6 @@ For now, they’re just small milestones that remind me where I started.
 ## About me
 
 I’m Uyên Nhi, an IT student who loves learning by building small things.  
-I don’t aim for perfection right now — just progress.  
+I don’t aim for perfection right now, just progress.  
 Every mini project here is a step forward.
 
