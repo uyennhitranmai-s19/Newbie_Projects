@@ -10,6 +10,7 @@ A basic calendar page. I built this one just to understand how to layout dates a
 
 **Drawing Tool**  
 A small web page where you can draw with your mouse. I made it while learning about the `<canvas>` element.
+
 **To-do List**  
 A simple to-do list where you can add and remove tasks. This was my first try making a web page actually “do something”.
 
